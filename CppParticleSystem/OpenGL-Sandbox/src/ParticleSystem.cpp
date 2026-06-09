@@ -25,7 +25,10 @@ void ParticleSystem::OnUpdate(GLCore::Timestep _fTimeStep)
 		
 		// Gravity
 		oParticle.vVelocity.y += oParticle.oParticleProps.bSimulateGravity ? oParticle.oParticleProps.fGravityScalar * static_cast<float>(_fTimeStep) : 0;
-		oParticle.vVelocity.y += -1 * oParticle.oParticleProps.fDrag * static_cast<float>(_fTimeStep);
+		// External Forces
+
+		// Drag
+		oParticle.vVelocity -= oParticle.vVelocity * oParticle.oParticleProps.fDrag * static_cast<float>(_fTimeStep);
 		
 		oParticle.vPosition += oParticle.vVelocity * static_cast<float>(_fTimeStep);
 
