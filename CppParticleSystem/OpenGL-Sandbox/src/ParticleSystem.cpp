@@ -22,6 +22,11 @@ void ParticleSystem::OnUpdate(GLCore::Timestep _fTimeStep)
 
 		//@TODO: Physics simulation
 		// Update de tamaño, color, lifetime, etc.
+		
+		// Gravity
+		oParticle.vVelocity.y += oParticle.oParticleProps.bSimulateGravity ? oParticle.oParticleProps.fGravityScalar * static_cast<float>(_fTimeStep) : 0;
+		oParticle.vVelocity.y += -1 * oParticle.oParticleProps.fDrag * static_cast<float>(_fTimeStep);
+		
 		oParticle.vPosition += oParticle.vVelocity * static_cast<float>(_fTimeStep);
 
 		oParticle.fLifeRemaining -= static_cast<float>(_fTimeStep);
@@ -101,6 +106,7 @@ void ParticleSystem::Emit(const ParticleProperties& _oParticleProps)
 	oParticle.fLifeRemaining = _oParticleProps.fLifeTime;
 	oParticle.oParticleProps = _oParticleProps;
 
+	oParticle.vPosition = _oParticleProps.vInitialPosition;
 	oParticle.vVelocity = _oParticleProps.vInitialVelocity;
 	oParticle.fSpin = Random::Float() * 2.0f * glm::pi<float>();
 	m_uPoolIndex = --m_uPoolIndex % m_tParticlePool.size();

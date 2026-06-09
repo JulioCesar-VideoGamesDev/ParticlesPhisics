@@ -6,7 +6,7 @@
 // Generic properties for all particles
 struct ParticleProperties
 {
-	glm::vec2 vInitialPosition;
+	glm::vec2 vInitialPosition{0.f};
 	
 	glm::vec4 vColorBegin, vColorEnd;
 
@@ -18,10 +18,14 @@ struct ParticleProperties
 	glm::vec4 vVelocityVariation;
 	bool bSimulateGravity;
 	float fGravityScalar;
-	float fDrag;
+	float fDrag; // Se calcula con la velocidad en negativo por una constante que es esta variable
 
 	bool bSimulateCollision;
 	float fRestitution; // Cuanto rebota
+	glm::vec2 vCollisionNormal;
+	glm::vec2 vSurfacePoint;
+
+	std::vector<glm::vec2> tExternalForces;
 };
 
 class ParticleSystem
