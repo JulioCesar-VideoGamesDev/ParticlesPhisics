@@ -23,14 +23,7 @@ void ParticleSystem::OnUpdate(GLCore::Timestep _fTimeStep)
 		//@TODO: Physics simulation
 		// Update de tamaño, color, lifetime, etc.
 		
-		// Gravity
-		oParticle.vVelocity.y += oParticle.oParticleProps.bSimulateGravity ? oParticle.oParticleProps.fGravityScalar * static_cast<float>(_fTimeStep) : 0;
-		// External Forces
-
-		// Drag
-		oParticle.vVelocity -= oParticle.vVelocity * oParticle.oParticleProps.fDrag * static_cast<float>(_fTimeStep);
-		
-		oParticle.vPosition += oParticle.vVelocity * static_cast<float>(_fTimeStep);
+		// Check Collisions
 
 		auto ApplyBounce = [&oParticle]()
 			{
@@ -59,6 +52,24 @@ void ParticleSystem::OnUpdate(GLCore::Timestep _fTimeStep)
 		{
 			ApplyBounce();
 		}
+
+		// Gravity
+		oParticle.vVelocity.y += oParticle.oParticleProps.bSimulateGravity ? oParticle.oParticleProps.fGravityScalar * static_cast<float>(_fTimeStep) : 0;
+		// External Forces
+
+		glm::vec2 vResultingForce(0.0f);
+
+		for (const glm::vec2& force : oParticle.oParticleProps.tExternalForces)
+		{
+			vResultingForce += force;
+		}
+
+		oParticle.vVelocity += vResultingForce * static_cast<float>(_fTimeStep);
+
+		// Drag
+		oParticle.vVelocity -= oParticle.vVelocity * oParticle.oParticleProps.fDrag * static_cast<float>(_fTimeStep);
+		
+		oParticle.vPosition += oParticle.vVelocity * static_cast<float>(_fTimeStep);
 
 		oParticle.fLifeRemaining -= static_cast<float>(_fTimeStep);
 		oParticle.bActive = oParticle.fLifeRemaining > 0.f;
