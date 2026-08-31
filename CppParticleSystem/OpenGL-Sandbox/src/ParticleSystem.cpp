@@ -32,6 +32,34 @@ void ParticleSystem::OnUpdate(GLCore::Timestep _fTimeStep)
 		
 		oParticle.vPosition += oParticle.vVelocity * static_cast<float>(_fTimeStep);
 
+		auto ApplyBounce = [&oParticle]()
+			{
+				glm::vec2 collisionNormal = glm::normalize(oParticle.oParticleProps.vCollisionNormal);
+
+				oParticle.vVelocity -= (1.0f + oParticle.oParticleProps.fRestitution) *
+					glm::dot(oParticle.vVelocity, collisionNormal) *
+					collisionNormal;
+			};
+
+		// Check collisions in Y axis.
+		if (oParticle.oParticleProps.vCollisionNormal.y > 0 && oParticle.vPosition.y < oParticle.oParticleProps.vSurfacePoint.y)
+		{
+			ApplyBounce();
+		}
+		else if (oParticle.oParticleProps.vCollisionNormal.y < 0 && oParticle.vPosition.y > oParticle.oParticleProps.vSurfacePoint.y)
+		{
+			ApplyBounce();
+		}
+		// Check collisions in X axis.
+		if (oParticle.oParticleProps.vCollisionNormal.x > 0 && oParticle.vPosition.x < oParticle.oParticleProps.vSurfacePoint.x)
+		{
+			ApplyBounce();
+		}
+		else if (oParticle.oParticleProps.vCollisionNormal.x < 0 && oParticle.vPosition.x > oParticle.oParticleProps.vSurfacePoint.x)
+		{
+			ApplyBounce();
+		}
+
 		oParticle.fLifeRemaining -= static_cast<float>(_fTimeStep);
 		oParticle.bActive = oParticle.fLifeRemaining > 0.f;
 
@@ -87,7 +115,7 @@ void ParticleSystem::OnRender(GLCore::Utils::OrthographicCamera& _oCamera)
 		float life = particle.fLifeRemaining / particle.oParticleProps.fLifeTime;
 		glm::vec4 color = glm::lerp(particle.oParticleProps.vColorEnd, particle.oParticleProps.vColorBegin, life);
 
-		float size = glm::lerp(particle.oParticleProps.fSizeEnd, particle.oParticleProps.fSizeBegin, life);
+		float size = glm::lerp(particle.oParticleProps.fSizeEnd, particle.oParticleProps.fSizeBegin + particle.vSizeVariation, life);
 		
 		// Render
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), { particle.vPosition.x, particle.vPosition.y, 0.0f })
@@ -109,8 +137,33 @@ void ParticleSystem::Emit(const ParticleProperties& _oParticleProps)
 	oParticle.fLifeRemaining = _oParticleProps.fLifeTime;
 	oParticle.oParticleProps = _oParticleProps;
 
+	// Random size
+	std::random_device rd;
+	std::mt19937 gen(rd());
+
+	std::uniform_real_distribution<float> randomSize(
+		_oParticleProps.vSizeVariation.x,
+		_oParticleProps.vSizeVariation.y
+	);
+	oParticle.vSizeVariation = randomSize(gen);
+	
+	// Position
 	oParticle.vPosition = _oParticleProps.vInitialPosition;
-	oParticle.vVelocity = _oParticleProps.vInitialVelocity;
+
+	// Random Velocity
+	std::uniform_real_distribution<float> randomVelocityX(
+		_oParticleProps.vVelocityVariation.x,
+		_oParticleProps.vVelocityVariation.y
+	);
+	std::uniform_real_distribution<float> randomVelocityY(
+		_oParticleProps.vVelocityVariation.z,
+		_oParticleProps.vVelocityVariation.a
+	);
+	oParticle.vVelocityVariation = glm::vec2(randomVelocityX(gen), randomVelocityY(gen));
+	oParticle.vVelocity = _oParticleProps.vInitialVelocity + oParticle.vVelocityVariation;
+
+	// Spin
 	oParticle.fSpin = Random::Float() * 2.0f * glm::pi<float>();
+
 	m_uPoolIndex = --m_uPoolIndex % m_tParticlePool.size();
 }

@@ -20,23 +20,23 @@ void SandboxLayer::OnAttach()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	//@TODO: Init particle props here
-	m_oParticleProps.vColorBegin = { 61 / 255.0f, 158 / 255.0f, 219 / 255.0f, 1.0f };
-	m_oParticleProps.vColorEnd = { 197 / 255.0f, 219 / 255.0f, 233 / 255.0f, 1.0f };
+	m_oParticleProps.vColorBegin =	{ 0.f / 255.f, 255.f / 255.f, 0.f / 255.f, 1.f };
+	m_oParticleProps.vColorEnd =	{ 0.f / 255.f, 127.5f / 255.f, 255.f / 255.f, 0.5f };
 
-	m_oParticleProps.fSizeBegin = 0.25f, m_oParticleProps.fSizeEnd = 0.0f;
-	m_oParticleProps.vSizeVariation = { 0.f, 0.8f };
+	m_oParticleProps.fSizeBegin = 0.f, m_oParticleProps.fSizeEnd = 0.f;
+	m_oParticleProps.vSizeVariation = { 0.5f, 1.f };
 	m_oParticleProps.fLifeTime = { 1.f };
-	m_oParticleProps.vInitialVelocity = { 1.f, 1.f };
+	m_oParticleProps.vInitialVelocity = { 0.f, 1.f };
 
-	m_oParticleProps.vVelocityVariation = { 0.f, 0.f, 0.f, 0.f };
-	m_oParticleProps.bSimulateGravity = { false };
-	m_oParticleProps.fGravityScalar = { -2.f };
-	m_oParticleProps.fDrag = { 0.f };
-	m_oParticleProps.bSimulateCollision = { false };
+	m_oParticleProps.vVelocityVariation = { -2.f, 2.f, 0.f, 4.f };
+	m_oParticleProps.bSimulateGravity = { true };
+	m_oParticleProps.fGravityScalar = { -10.f };
+	m_oParticleProps.fDrag = { 1.f };
+	m_oParticleProps.bSimulateCollision = { true };
 
-	m_oParticleProps.fRestitution = { 0.f };
-	m_oParticleProps.vCollisionNormal = { 0.f, 0.f };
-	m_oParticleProps.vSurfacePoint = { 0.f, 0.f };
+	m_oParticleProps.fRestitution = { 0.5f };
+	m_oParticleProps.vCollisionNormal = { 0.f, 1.f };
+	m_oParticleProps.vSurfacePoint = { 0.f, -1.f };
 }
 
 void SandboxLayer::OnDetach()

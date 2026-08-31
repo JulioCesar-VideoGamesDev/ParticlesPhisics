@@ -42,10 +42,13 @@ private:
 	{
 		glm::vec2 vPosition;
 		glm::vec2 vVelocity;
+		glm::vec2 vVelocityVariation;
 		float fSpin = 0.0f;
 
 		float fLifeRemaining = 0.0f;
 		ParticleProperties oParticleProps;
+
+		float vSizeVariation;
 
 		bool bActive = false;
 	};
